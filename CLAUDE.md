@@ -1,8 +1,8 @@
-# [Project Name] — Agent Steering Guide
+# Afoot — Agent Steering Guide
 
-> [One-sentence description of what the app does and who it's for.]
+> A personalized San Francisco event feed: real events from many sources, ranked by how well they fit your taste, refreshed autonomously.
 
-Live URL: **(paste after first deploy)**
+Live URL: **https://agentic-scaffold-nine.vercel.app**
 
 ---
 
@@ -10,107 +10,71 @@ Live URL: **(paste after first deploy)**
 
 | Concern    | Choice                                            |
 |------------|---------------------------------------------------|
-| Framework  | Next.js (App Router, TypeScript)                  |
-| Frontend   | React + Tailwind CSS                              |
-| Database   | Supabase + Drizzle ORM                                    |
-| Auth       | *(only if needed)* Supabase Auth — email/password |
-| Deployment | Vercel (`vercel --prod`)                          |
+| Framework  | Next.js 15 (App Router, TypeScript)               |
+| Frontend   | React + Tailwind CSS + lucide-react icons         |
+| Database   | Supabase Postgres + Drizzle ORM                   |
+| LLM        | Claude Haiku via `@anthropic-ai/sdk`              |
+| Auth       | None — single-user `'me'` profile                 |
+| Deployment | Vercel + daily Cron                               |
 
 ---
 
 ## Golden Principles
 
-**Universal — always enforced:**
-
-- Build the thinnest thing that demos. Stub anything not in scope.
-- A feature must run even if another active stream's files are missing — never call another stream's endpoint at runtime. Seed or query locally instead.
-- All internal pages: `export const dynamic = "force-dynamic"`.
-- No new npm dependencies without explicit user approval — exhaust existing packages first.
-
-- Monetary amounts stored as **cents** (integers) — never floats.
-- All DB access through `src/db/index.ts` only — never import the Drizzle client elsewhere.
-- Protected API routes: `createClient()` + `getUser()` → return 401 if no session.
-
-- **Navbar auth contract (always enforced when a Navbar is created):**
-  1. Create `src/lib/supabase/client.ts` (browser) and `src/lib/supabase/server.ts` (server) if they don't exist — wrappers around `@supabase/ssr`.
-  2. Create `src/app/login/page.tsx` — Supabase email/password form. On success → redirect to `/`.
-  3. Create `src/app/auth/callback/route.ts` — exchanges Supabase auth code for a session.
-  4. Add `src/middleware.ts` that redirects unauthenticated requests on `/(app)/*` to `/login`.
-  5. `Navbar.tsx` is a server component: reads session via server client. Renders a Login link (`/login`) when no session; renders user avatar + email + Logout dropdown when session exists. Logout calls `supabase.auth.signOut()` and redirects to `/login`.
-  6. Add `@supabase/ssr` to `package.json` if not already present (the one approved exception to the no-new-deps rule for auth).
-
-**Domain-specific (add during intake):**
-
-- [key enums, utility names, etc.]
+- Build the thinnest thing that demos. Real data over mock data.
+- **A stream must compile and run even if another stream's files are missing.** Talk to other streams only through the API contracts and shared types below — never import another stream's internal files.
+- All DB access through `src/db/index.ts` only. Schema in `src/db/schema.ts` is **FROZEN**.
+- Shared types in `src/lib/types.ts` are **FROZEN** — the contract between streams.
+- Monetary amounts stored as **cents** (integers).
+- LLM is optional at runtime: `src/lib/anthropic.ts` exports `anthropic` (null if no key) and `hasLLM`. Every LLM call site MUST have a non-LLM fallback so the app works before the key is set.
+- Internal pages that read the DB: `export const dynamic = "force-dynamic"`.
+- No auth, RBAC, pagination, or tests unless explicitly in a task.
 
 ---
 
-## Directory Map
+## Shared Types (`src/lib/types.ts` — FROZEN)
 
-Keeps parallel agents off each other's files. Update as files are created.
+`Category` (union), `CATEGORIES`, `RawEvent` (adapter output), `EventDTO` (API→client),
+`RankedEvent` (EventDTO + `score`, `reason`, `saved`), `Profile`, `DEFAULT_PROFILE`, `InteractionAction`.
 
-| Path | Purpose |
-|------|---------|
-| `src/app/(app)/` | App pages |
-| `src/app/api/` | API route handlers |
-| `src/app/login/` | Login page |
-| `src/app/auth/callback/` | Supabase auth callback handler |
-| `src/components/` | Shared UI components |
-| `src/lib/types.ts` | Shared types / data shapes |
-| `src/lib/utils.ts` | Shared utilities |
-| `src/lib/supabase/` | Supabase client helpers (client.ts + server.ts) |
-| `src/middleware.ts` | Route protection — redirects unauthed users to /login |
-| `src/db/index.ts` | DB client + table exports — single entry point |
-| `src/db/schema.ts` | Drizzle schema |
+## API Contracts (the seam between streams)
+
+- `POST /api/ingest` → runs all source adapters, upserts events. Returns `{ ok, counts: Record<source,number>, total }`. **Owned by Stream A.**
+- `GET /api/feed?category=&free=&when=` → `{ events: RankedEvent[], profile: Profile, stats: { total, shown, lastIngest } }`. Ranked desc by score. **Owned by Stream B.**
+- `GET /api/profile` → `{ profile: Profile }` (creates DEFAULT_PROFILE if missing).
+- `PUT /api/profile` body `Partial<Profile>` → `{ profile: Profile }`, and invalidates match_cache. **Owned by Stream B.**
+- `POST /api/interactions` body `{ eventId, action }` → `{ ok: true }`. **Owned by Stream B.**
 
 ---
 
-## Backlog
+## Directory Map (file ownership — keeps parallel agents off each other)
 
-*(From spec, sorted P0 → P1 → P2.)*
-
-| Priority | Feature | Notes |
-|----------|---------|-------|
-|          |         |       |
-
----
-
-## Stories
-
-*(Filled during intake. One block per P0/P1 feature — copied verbatim from docs/SPEC.md.)*
-
-### [Feature Name]
-ENTRY: [entry condition]
-FLOW:
-
-  1. [step]
-  2. [step]
-    -
-  n. [step]  
-EXIT:  [success state]
+| Path | Purpose | Owner |
+|------|---------|-------|
+| `src/db/schema.ts`, `src/db/index.ts` | DB (FROZEN) | foundation |
+| `src/lib/types.ts` | shared types (FROZEN) | foundation |
+| `src/lib/anthropic.ts`, `src/lib/categories.ts` | LLM client + category meta | foundation |
+| `src/lib/sources/*` | source adapters + LLM normalize + registry | **Stream A** |
+| `src/app/api/ingest/route.ts` | ingestion endpoint | **Stream A** |
+| `src/lib/match.ts` | scoring engine | **Stream B** |
+| `src/app/api/feed/route.ts`, `src/app/api/profile/route.ts`, `src/app/api/interactions/route.ts` | read/profile/interaction APIs | **Stream B** |
+| `src/app/page.tsx`, `src/app/onboarding/page.tsx`, `src/app/layout.tsx`, `src/app/globals.css`, `tailwind.config.ts`, `src/components/*` | UI | **Stream C** |
+| `vercel.json` | cron | integration |
 
 ---
 
-## Active Feature Streams
+## Domain Rules
 
-| Status | Stream ID | Feature |
-|--------|-----------|---------|
-| —      | —         | *(set by the orchestrator at sprint start)* |
+- Sources: `funcheap` (WP REST, all categories, LLM-normalized), `19hz` (HTML table, music/nightlife), `ticketmaster` + `eventbrite` (graceful no-op without API key).
+- Upsert events by unique `(source, source_id)`.
+- "Upcoming" = `start_time >= now()` OR `start_time IS NULL` (undated events still shown, ranked lower).
+- Match score 0-100; `reason` ≤ ~12 words, second person ("Right up your alley — AI + live music").
+- Profile is single-row id `'me'`, seeded from `DEFAULT_PROFILE` (tech/music/food/arts).
 
 ---
 
 ## Implemented Features
 
-| Feature | Priority | Key Files | Stream ID |
-|---------|----------|-----------|-----------|
-| *(none yet)* | — | — | — |
-
----
-
-## Handoff Contract
-
-On completion, each agent updates this file directly:
-1. In **Active Feature Streams**: change `[ ] In Progress` → `[x] Complete` for the stream.
-2. In **Implemented Features**: add a row — feature name, priority, key files, stream ID.
-
-`CLAUDE.md` is the shared memory across all terminals.
+| Feature | Priority | Key Files | Stream |
+|---------|----------|-----------|--------|
+| *(updated on completion)* | — | — | — |

@@ -2,7 +2,7 @@
 
 A Next.js + Supabase template for building a working app under the clock in a **live coding interview** by running 2–3 AI coding agents in parallel — without them colliding on the same files.
 
-Live URL: **(paste after first deploy)**
+Live URL: **https://agentic-scaffold-nine.vercel.app**
 
 ## Pipeline
 
