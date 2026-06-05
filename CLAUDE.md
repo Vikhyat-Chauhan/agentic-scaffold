@@ -73,8 +73,28 @@ Live URL: **https://agentic-scaffold-nine.vercel.app**
 
 ---
 
+## Active Feature Streams
+
+*(Sprint 1 — set by the orchestrator. Foundation/Sprint 0 already committed.)*
+
+| Status | Stream ID | Feature |
+|--------|-----------|---------|
+| [ ] In Progress | feat/ingestion-a1 | Real-data ingestion — source adapters + `POST /api/ingest` |
+| [x] Complete | feat/matching-b2 | Matching engine + feed/profile/interaction APIs |
+| [ ] In Progress | feat/ui-c3 | Editorial dark UI — feed + onboarding |
+
+---
+
+## Handoff Contract
+
+On completion each agent updates THIS file:
+1. In **Active Feature Streams**: `[ ] In Progress` → `[x] Complete` for the stream.
+2. In **Implemented Features**: add a row (feature, priority, key files, stream ID).
+
+---
+
 ## Implemented Features
 
 | Feature | Priority | Key Files | Stream |
 |---------|----------|-----------|--------|
-| *(updated on completion)* | — | — | — |
+| Matching engine + feed/profile/interaction APIs | P0 | `src/lib/match.ts`, `src/app/api/feed/route.ts`, `src/app/api/profile/route.ts`, `src/app/api/interactions/route.ts` | feat/matching-b2 |
