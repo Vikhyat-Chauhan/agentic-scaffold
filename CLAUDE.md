@@ -88,7 +88,7 @@ Live URL: **https://agentic-scaffold-nine.vercel.app**
 | [x] Complete | feat/ics-export-f7 | Per-event "Add to calendar" (.ics download) |
 | [x] Complete | feat/more-sources-g8 | Ticketmaster + Eventbrite live fetch (key-gated) |
 | [x] Complete | feat/map-h9 | Neighborhood discovery view — events grouped by neighborhood at `/map` |
-| [ ] In Progress | feat/digest-i10 | Email digest via Resend — `GET /api/digest` sends top events (key-gated) |
+| [x] Complete | feat/digest-i10 | Email digest via Resend — `GET /api/digest` sends top events (key-gated) |
 
 ### Story blocks for in-progress streams (promoted P2s)
 
@@ -130,4 +130,5 @@ On completion each agent updates THIS file:
 | Feed filters — category / free-only / today / weekend | P1 | `src/components/{CategoryFilter,FeedClient}.tsx`, `src/app/api/feed/route.ts` | feat/filters-f6 |
 | Per-event "Add to calendar" (.ics download) | P2 | `src/lib/ics.ts`, `src/components/EventCard.tsx` | feat/ics-export-f7 |
 | Ticketmaster + Eventbrite live fetch (key-gated) | P2 | `src/lib/sources/{ticketmaster,eventbrite}.ts` | feat/more-sources-g8 |
+| Email digest via Resend (key-gated) | P2 | `src/app/api/digest/route.ts`, `src/lib/email.ts`, `vercel.json` | feat/digest-i10 |
 | Neighborhood discovery view | P2 | `src/app/map/page.tsx`, `src/components/Header.tsx` | feat/map-h9 |

@@ -20,6 +20,7 @@
     "postgres": "^3.4.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "resend": "^6.12.4",
     "tailwind-merge": "^2.5.5",
     "zod": "^4.4.3"
   },
