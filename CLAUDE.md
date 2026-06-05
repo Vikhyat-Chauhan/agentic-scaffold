@@ -85,6 +85,8 @@ Live URL: **https://agentic-scaffold-nine.vercel.app**
 | [x] Complete | feat/save-dismiss-d4 | Save / dismiss events + `/saved` view |
 | [x] Complete | feat/cron-e5 | Autonomous daily refresh — Vercel cron → `/api/ingest` |
 | [x] Complete | feat/filters-f6 | Feed filters — category / free-only / today / weekend |
+| [x] Complete | feat/ics-export-f7 | Per-event "Add to calendar" (.ics download) |
+| [ ] In Progress | feat/more-sources-g8 | Ticketmaster + Eventbrite live fetch (key-gated) |
 
 ---
 
@@ -106,3 +108,4 @@ On completion each agent updates THIS file:
 | Save / dismiss events + `/saved` view | P1 | `src/components/{EventCard,FeedClient,SavedClient,Header}.tsx`, `src/app/saved/page.tsx` | feat/save-dismiss-d4 |
 | Autonomous daily refresh — Vercel cron → `GET /api/ingest` | P1 | `vercel.json`, `src/app/api/ingest/route.ts` | feat/cron-e5 |
 | Feed filters — category / free-only / today / weekend | P1 | `src/components/{CategoryFilter,FeedClient}.tsx`, `src/app/api/feed/route.ts` | feat/filters-f6 |
+| Per-event "Add to calendar" (.ics download) | P2 | `src/lib/ics.ts`, `src/components/EventCard.tsx` | feat/ics-export-f7 |

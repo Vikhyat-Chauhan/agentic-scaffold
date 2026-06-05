@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Heart, X, MapPin, ArrowUpRight } from "lucide-react";
+import { Heart, X, MapPin, ArrowUpRight, CalendarPlus } from "lucide-react";
 import type { RankedEvent } from "@/lib/types";
 import { CATEGORY_META } from "@/lib/categories";
+import { buildICS, slugify } from "@/lib/ics";
 import { cn } from "@/lib/utils";
 import { MatchBadge } from "./MatchBadge";
 import { formatEventDate, formatPrice, relativeDay } from "./format";
@@ -31,6 +32,19 @@ export function EventCard({
   const price = formatPrice(event);
   const isFreeLabel = price === "Free";
   const rel = relativeDay(event.startTime);
+
+  function handleAddToCalendar() {
+    const ics = buildICS(event);
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const href = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = href;
+    a.download = `${slugify(event.title)}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(href);
+  }
 
   return (
     <article
@@ -84,6 +98,15 @@ export function EventCard({
 
         {/* Save / dismiss controls */}
         <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 transition-opacity duration-200 focus-within:opacity-100 group-hover:opacity-100">
+          {event.startTime ? (
+            <IconButton
+              label="Add to calendar"
+              onClick={handleAddToCalendar}
+              tone="dismiss"
+            >
+              <CalendarPlus className="h-4 w-4" aria-hidden />
+            </IconButton>
+          ) : null}
           <IconButton
             label={event.saved ? "Remove from saved" : "Save event"}
             pressed={event.saved}
