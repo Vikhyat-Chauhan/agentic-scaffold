@@ -55,7 +55,25 @@ export async function GET(req: Request) {
     if (freeParam === "true" || freeParam === "1") {
       filters.push(eq(events.isFree, true));
     }
-    if (whenParam === "week") {
+    // Time-window filters. The UI sends "today" / "weekend"; "week" kept as an
+    // alias. Each adds an upper bound on start_time, which also drops undated
+    // events from day-specific views (NULL comparisons are excluded by lte/gte).
+    if (whenParam === "today") {
+      const end = new Date();
+      end.setHours(23, 59, 59, 999);
+      filters.push(lte(events.startTime, end));
+    } else if (whenParam === "weekend") {
+      const now = new Date();
+      const day = now.getDay(); // 0 Sun .. 6 Sat
+      const sat = new Date(now);
+      sat.setDate(now.getDate() + (day === 0 ? -1 : 6 - day));
+      sat.setHours(0, 0, 0, 0);
+      const sunEnd = new Date(sat);
+      sunEnd.setDate(sat.getDate() + 1);
+      sunEnd.setHours(23, 59, 59, 999);
+      filters.push(gte(events.startTime, sat));
+      filters.push(lte(events.startTime, sunEnd));
+    } else if (whenParam === "week") {
       const weekEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       filters.push(lte(events.startTime, weekEnd));
     }

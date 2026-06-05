@@ -84,6 +84,7 @@ Live URL: **https://agentic-scaffold-nine.vercel.app**
 | [x] Complete | feat/ui-c3 | Editorial dark UI — feed + onboarding |
 | [x] Complete | feat/save-dismiss-d4 | Save / dismiss events + `/saved` view |
 | [x] Complete | feat/cron-e5 | Autonomous daily refresh — Vercel cron → `/api/ingest` |
+| [x] Complete | feat/filters-f6 | Feed filters — category / free-only / today / weekend |
 
 ---
 
@@ -104,3 +105,4 @@ On completion each agent updates THIS file:
 | Editorial dark UI — feed + onboarding | P0 | `src/app/{layout,page,globals.css}`, `tailwind.config.ts`, `src/app/onboarding/page.tsx`, `src/components/{Header,FeedClient,EventCard,MatchBadge,CategoryFilter,ProfileForm,Skeleton,EmptyState,format}.tsx` | feat/ui-c3 |
 | Save / dismiss events + `/saved` view | P1 | `src/components/{EventCard,FeedClient,SavedClient,Header}.tsx`, `src/app/saved/page.tsx` | feat/save-dismiss-d4 |
 | Autonomous daily refresh — Vercel cron → `GET /api/ingest` | P1 | `vercel.json`, `src/app/api/ingest/route.ts` | feat/cron-e5 |
+| Feed filters — category / free-only / today / weekend | P1 | `src/components/{CategoryFilter,FeedClient}.tsx`, `src/app/api/feed/route.ts` | feat/filters-f6 |

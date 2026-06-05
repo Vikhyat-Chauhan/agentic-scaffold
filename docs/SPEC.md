@@ -62,6 +62,38 @@ EXIT: the `events` table holds dozens+ of real upcoming SF events.
 
 ---
 
+## Stories — P1 (manual test scripts)
+
+### Save / dismiss  *(feat/save-dismiss-d4)*
+ENTRY: user is on the feed at `/`
+FLOW:
+  1. Each event card shows a save (thumbs-up) and dismiss (thumbs-down) control
+  2. User taps **dismiss** on an event → it disappears from the feed
+  3. User taps **save** on another event → the card shows a saved/active state
+  4. User opens `/saved` from the nav
+EXIT: dismissed events no longer appear in the feed, and the saved event is listed at `/saved`.
+TEST: dismiss the top card (it vanishes), save the next card, open `/saved` — only the saved event shows. Reload `/` — the dismissed card stays gone.
+
+### Filters  *(feat/filters — not yet built; Sprint 3)*
+ENTRY: user is on the feed at `/`
+FLOW:
+  1. User picks a category chip, and/or toggles "free only", and/or toggles "this week"
+  2. Feed refetches `GET /api/feed?category=&free=&when=` with the active filters
+  3. Feed re-renders to show only matching events
+EXIT: the feed shows only events matching the selected filters; clearing filters restores the full ranked list.
+TEST: select category "music" — only music events remain; toggle "free only" — paid events drop; clear both — full feed returns.
+
+### Autonomous refresh  *(feat/cron-e5)*
+ENTRY: Vercel Cron fires daily (or manually hit `GET /api/ingest`)
+FLOW:
+  1. Cron calls `GET /api/ingest` on schedule
+  2. The same ingestion runs as POST — adapters fetch, normalize, upsert by (source, source_id)
+  3. The `events` table is updated with fresh upcoming events
+EXIT: `GET /api/ingest` returns `{ ok, counts, total }` and the feed reflects newly ingested events with no manual step.
+TEST: run `curl http://localhost:3000/api/ingest` (GET) — confirm a JSON `{ ok, counts, total }` with non-zero total; check `vercel.json` has a `crons` entry on `/api/ingest`. Reload `/` — feed is populated.
+
+---
+
 ## Tech Stack
 
 | Concern    | Choice |
