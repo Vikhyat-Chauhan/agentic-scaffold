@@ -82,6 +82,8 @@ Live URL: **https://agentic-scaffold-nine.vercel.app**
 | [x] Complete | feat/ingestion-a1 | Real-data ingestion — source adapters + `POST /api/ingest` |
 | [x] Complete | feat/matching-b2 | Matching engine + feed/profile/interaction APIs |
 | [x] Complete | feat/ui-c3 | Editorial dark UI — feed + onboarding |
+| [x] Complete | feat/save-dismiss-d4 | Save / dismiss events + `/saved` view |
+| [ ] In Progress | feat/cron-e5 | Autonomous daily refresh — Vercel cron → `/api/ingest` |
 
 ---
 
@@ -100,3 +102,4 @@ On completion each agent updates THIS file:
 | Matching engine + feed/profile/interaction APIs | P0 | `src/lib/match.ts`, `src/app/api/feed/route.ts`, `src/app/api/profile/route.ts`, `src/app/api/interactions/route.ts` | feat/matching-b2 |
 | Real-data ingestion — source adapters + `POST /api/ingest` | P0 | `src/lib/sources/{funcheap,nineteenhz,ticketmaster,eventbrite,normalize,index}.ts`, `src/app/api/ingest/route.ts` | feat/ingestion-a1 |
 | Editorial dark UI — feed + onboarding | P0 | `src/app/{layout,page,globals.css}`, `tailwind.config.ts`, `src/app/onboarding/page.tsx`, `src/components/{Header,FeedClient,EventCard,MatchBadge,CategoryFilter,ProfileForm,Skeleton,EmptyState,format}.tsx` | feat/ui-c3 |
+| Save / dismiss events + `/saved` view | P1 | `src/components/{EventCard,FeedClient,SavedClient,Header}.tsx`, `src/app/saved/page.tsx` | feat/save-dismiss-d4 |
