@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SlidersHorizontal, Heart } from "lucide-react";
+import { SlidersHorizontal, Heart, MapPin } from "lucide-react";
 
 /** Editorial masthead. Sticky, glassy, with a hand-set serif wordmark. */
 export function Header() {
@@ -16,6 +16,13 @@ export function Header() {
         </Link>
 
         <nav className="flex items-center gap-2">
+          <Link
+            href="/map"
+            className="flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm text-text-secondary transition-colors hover:border-border-2 hover:text-text-primary focus-visible:text-text-primary"
+          >
+            <MapPin className="h-3.5 w-3.5" aria-hidden />
+            <span>Map</span>
+          </Link>
           <Link
             href="/saved"
             className="flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm text-text-secondary transition-colors hover:border-border-2 hover:text-text-primary focus-visible:text-text-primary"

@@ -87,6 +87,26 @@ Live URL: **https://agentic-scaffold-nine.vercel.app**
 | [x] Complete | feat/filters-f6 | Feed filters — category / free-only / today / weekend |
 | [x] Complete | feat/ics-export-f7 | Per-event "Add to calendar" (.ics download) |
 | [x] Complete | feat/more-sources-g8 | Ticketmaster + Eventbrite live fetch (key-gated) |
+| [x] Complete | feat/map-h9 | Neighborhood discovery view — events grouped by neighborhood at `/map` |
+| [ ] In Progress | feat/digest-i10 | Email digest via Resend — `GET /api/digest` sends top events (key-gated) |
+
+### Story blocks for in-progress streams (promoted P2s)
+
+**feat/map-h9 — Neighborhood discovery view**
+- ENTRY: user navigates to `/map`
+- FLOW:
+  1. Server loads upcoming events (reuse the same query the feed uses)
+  2. Group events by `neighborhood` (events with none fall under "Around SF")
+  3. Render one section per neighborhood, each listing its events with title + venue + start time
+- EXIT: user sees upcoming SF events grouped by neighborhood, each group showing its events; a nav link from the masthead reaches `/map`.
+
+**feat/digest-i10 — Email digest via Resend**
+- ENTRY: cron or admin hits `GET /api/digest`
+- FLOW:
+  1. Load the profile and the top-ranked upcoming events (reuse the ranking the feed produces)
+  2. Render a simple HTML digest of the top events (title, score, reason, url)
+  3. Send via Resend if `RESEND_API_KEY` is set; otherwise return a graceful no-op (same shape, `sent: false`)
+- EXIT: `GET /api/digest` returns `{ ok, sent, count }` — with a key set an email is sent; without it, a graceful no-op. Mirrors the LLM-optional pattern.
 
 ---
 
@@ -110,3 +130,4 @@ On completion each agent updates THIS file:
 | Feed filters — category / free-only / today / weekend | P1 | `src/components/{CategoryFilter,FeedClient}.tsx`, `src/app/api/feed/route.ts` | feat/filters-f6 |
 | Per-event "Add to calendar" (.ics download) | P2 | `src/lib/ics.ts`, `src/components/EventCard.tsx` | feat/ics-export-f7 |
 | Ticketmaster + Eventbrite live fetch (key-gated) | P2 | `src/lib/sources/{ticketmaster,eventbrite}.ts` | feat/more-sources-g8 |
+| Neighborhood discovery view | P2 | `src/app/map/page.tsx`, `src/components/Header.tsx` | feat/map-h9 |
