@@ -79,7 +79,7 @@ Live URL: **https://agentic-scaffold-nine.vercel.app**
 
 | Status | Stream ID | Feature |
 |--------|-----------|---------|
-| [ ] In Progress | feat/ingestion-a1 | Real-data ingestion — source adapters + `POST /api/ingest` |
+| [x] Complete | feat/ingestion-a1 | Real-data ingestion — source adapters + `POST /api/ingest` |
 | [x] Complete | feat/matching-b2 | Matching engine + feed/profile/interaction APIs |
 | [ ] In Progress | feat/ui-c3 | Editorial dark UI — feed + onboarding |
 
@@ -98,3 +98,4 @@ On completion each agent updates THIS file:
 | Feature | Priority | Key Files | Stream |
 |---------|----------|-----------|--------|
 | Matching engine + feed/profile/interaction APIs | P0 | `src/lib/match.ts`, `src/app/api/feed/route.ts`, `src/app/api/profile/route.ts`, `src/app/api/interactions/route.ts` | feat/matching-b2 |
+| Real-data ingestion — source adapters + `POST /api/ingest` | P0 | `src/lib/sources/{funcheap,nineteenhz,ticketmaster,eventbrite,normalize,index}.ts`, `src/app/api/ingest/route.ts` | feat/ingestion-a1 |
